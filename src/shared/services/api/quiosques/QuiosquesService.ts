@@ -88,8 +88,7 @@ const deleteById = async (id: number): Promise<void | Error> => {
   }
  };
 
-
-export const QuiosqueService = {
+export const QuiosquesService = {
   getAll,
   getById,
   create,
