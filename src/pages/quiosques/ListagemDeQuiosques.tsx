@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { CircularProgress, Icon, IconButton, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow } from "@mui/material";
+import { CircularProgress, Icon, IconButton, Pagination, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TableRow, Tooltip } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { IListagemQuiosque, QuiosquesService } from "../../shared/services/api/quiosques/QuiosquesService";
@@ -65,8 +65,9 @@ export const ListagemDeQuiosques: React.FC = () => {
       barraDeFerramentas={
         <FerramentasDaListagem
           mostrarInputBusca
-          textoBotaoNovo="Novo"
           textoDaBusca={busca}
+          textoBotaoNovo="Novo"
+          aoClicarEmNovo={() => navigate('/quiosques/detalhe/novo')}
           aoMudarTextoDeBusca={texto => setSearchParams({ busca: texto, pagina: '1' }, { replace: true})}
         />
       }
@@ -84,12 +85,18 @@ export const ListagemDeQuiosques: React.FC = () => {
             {rows.map(row => (
               <TableRow key={row.id}>
                 <TableCell>
-                  <IconButton size='small' onClick={() => handleDelete(row.id)}>
-                    <Icon fontSize="inherit">delete</Icon>
-                  </IconButton>
-                  <IconButton size='small' onClick={() => navigate(`/quiosques/detalhe/${row.id}`)}>
-                    <Icon fontSize="small">edit</Icon>
-                  </IconButton>
+                  <Tooltip title='Remover'>
+                    <IconButton size='small' onClick={() => handleDelete(row.id)}>
+                      <Icon>delete</Icon>
+                      {/* fontSize="inherit" */}
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title='Editar'>
+                    <IconButton size='small' onClick={() => navigate(`/quiosques/detalhe/${row.id}`)}>
+                      <Icon>edit</Icon>
+                      {/* fontSize="inherit" */}
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
                 <TableCell>{row.nome}</TableCell>
                 <TableCell>{row.endereco}</TableCell>
