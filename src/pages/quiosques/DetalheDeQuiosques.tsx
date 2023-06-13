@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
+import { Form } from "@unform/web";
 
 import { LayoutBaseDePagina } from "../../shared/layouts";
 import { FerramentasDeDetalhe } from "../../shared/components";
 import { QuiosquesService } from "../../shared/services/api/quiosques/QuiosquesService";
+import { VTextField } from "../../shared/forms";
 
 
 export const DetalheDeQuiosques: React.FC = () => {
@@ -72,11 +73,15 @@ export const DetalheDeQuiosques: React.FC = () => {
       }
     >
       
-      {isLoading && (
-        <CircularProgress color="info" />
-      )}
+      <Form onSubmit={(dados) => console.log(dados)}>
+        
+        <VTextField
+          name="nome"
+        />
 
-      <p>DetalheDeQuiosques {id} </p>
+        <button type="submit">Submit</button>
+      </Form>
+
     </LayoutBaseDePagina>
   );
 };
