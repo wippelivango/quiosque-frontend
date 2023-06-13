@@ -44,7 +44,7 @@ export const ListagemDeQuiosques: React.FC = () => {
 
   const handleDelete = (id: number) => {
     // eslint-disable-next-line no-restricted-globals
-    if (confirm('Realmente deseja apagar?')) {
+    if (confirm('Deseja realmente apagar o registro?')) {
       QuiosquesService.deleteById(id)
       .then(result => {
         if (result instanceof Error) {
