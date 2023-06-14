@@ -2,18 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FormHandles } from "@unform/core";
 import { Form } from "@unform/web";
+import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
 
 import { LayoutBaseDePagina } from "../../shared/layouts";
 import { FerramentasDeDetalhe } from "../../shared/components";
 import { QuiosquesService } from "../../shared/services/api/quiosques/QuiosquesService";
 import { VTextField } from "../../shared/forms";
-
 interface IFormData {
   nome: string;
   endereco: string;
   cidade: string;
 }
-
 
 export const DetalheDeQuiosques: React.FC = () => {
   const { id = 'novo'} = useParams<'id'>();
@@ -41,12 +40,10 @@ export const DetalheDeQuiosques: React.FC = () => {
         }
       });
     }
-
   }, [id]);
 
   const handleSave = (dados: IFormData) => {
     setIsLoading(true);
-
     if (id === 'novo') {
       QuiosquesService
       .create(dados)
@@ -63,7 +60,6 @@ export const DetalheDeQuiosques: React.FC = () => {
       .updateById(Number(id), { id: Number(id), ...dados })
       .then((result) => {
         setIsLoading(false);
-
         if (result instanceof Error) {
           alert(result.message);
         }
@@ -105,9 +101,57 @@ export const DetalheDeQuiosques: React.FC = () => {
       }
     >
       <Form ref={formRef} onSubmit={handleSave}>
-        <VTextField placeholder="Nome" name="nome" />
-        <VTextField placeholder="Endereço" name="endereco" />
-        <VTextField placeholder="Cidade" name="cidade" />
+        <Box margin={1} display='flex' flexDirection='column' component={Paper} variant="outlined">
+
+          <Grid container direction='column' padding={2} spacing={2}>
+
+            {isLoading && (
+              <Grid item textAlign='center'>
+                <CircularProgress color="info" />
+              </Grid>
+            )}
+
+            <Grid item>
+              <Typography variant="h6">Geral</Typography>
+            </Grid>
+
+            <Grid container item direction='row' spacing={2}>
+              <Grid item xs={12} sm={12} md={6} lg={4} xl={2}>
+                <VTextField
+                  fullWidth
+                  name="nome"
+                  label="Nome"
+                  disabled={isLoading}
+                  onChange={e => setNome(e.target.value)}
+                />
+              </Grid>
+            </Grid>
+
+            <Grid container item direction='row' spacing={2}>
+              <Grid item xs={12} sm={12} md={6} lg={4} xl={2}>
+                <VTextField
+                  fullWidth
+                  name="endereco"
+                  label="Endereço"
+                  disabled={isLoading}
+                />
+              </Grid>
+            </Grid>
+
+            <Grid container item direction='row' spacing={2}>
+              <Grid item xs={12} sm={12} md={6} lg={4} xl={2}>
+                <VTextField
+                  fullWidth
+                  name="cidade"
+                  label="Cidade"
+                  disabled={isLoading}
+                />
+              </Grid>
+            </Grid>
+
+          </Grid>
+
+        </Box>
       </Form>
     </LayoutBaseDePagina>
   );

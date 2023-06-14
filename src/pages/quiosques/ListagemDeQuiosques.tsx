@@ -79,6 +79,7 @@ export const ListagemDeQuiosques: React.FC = () => {
               <TableCell>Ações</TableCell>
               <TableCell>Nome</TableCell>
               <TableCell>Endereço</TableCell>
+              <TableCell>Cidade</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -100,25 +101,24 @@ export const ListagemDeQuiosques: React.FC = () => {
                 </TableCell>
                 <TableCell>{row.nome}</TableCell>
                 <TableCell>{row.endereco}</TableCell>
+                <TableCell>{row.cidade}</TableCell>
               </TableRow>
             ))}
           </TableBody>
-
             {totalCount === 0 && !isLoading && (
               <caption>{Environment.LISTAGEM_VAZIA}</caption>
             )}
-
           <TableFooter>
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={3} align="center">
+                <TableCell colSpan={4} align="center">
                     <CircularProgress color="info" />
                 </TableCell>
               </TableRow>
             )}
             {(totalCount > 0 && totalCount > Environment.LIMITE_DE_LINHAS) && (
               <TableRow>
-                <TableCell colSpan={3}>
+                <TableCell colSpan={4}>
                   <Pagination
                     page={pagina}
                     count={Math.ceil(totalCount / Environment.LIMITE_DE_LINHAS)}
@@ -130,7 +130,6 @@ export const ListagemDeQuiosques: React.FC = () => {
           </TableFooter>
         </Table>
       </TableContainer>
-
     </LayoutBaseDePagina>
   );
 };
