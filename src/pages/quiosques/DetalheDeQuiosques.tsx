@@ -1,13 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { FormHandles } from "@unform/core";
-import { Form } from "@unform/web";
+import { useEffect, useState } from "react";
 import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { LayoutBaseDePagina } from "../../shared/layouts";
 import { FerramentasDeDetalhe } from "../../shared/components";
 import { QuiosquesService } from "../../shared/services/api/quiosques/QuiosquesService";
-import { VTextField } from "../../shared/forms";
+import { VTextField, VForm, useVForm } from "../../shared/forms";
 interface IFormData {
   nome: string;
   endereco: string;
@@ -17,8 +15,8 @@ interface IFormData {
 export const DetalheDeQuiosques: React.FC = () => {
   const { id = 'novo'} = useParams<'id'>();
   const navigate = useNavigate();
+  const { formRef, save, saveAndClose, isSaveAndClose } = useVForm();
 
-  const formRef = useRef<FormHandles>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [nome, setNome] = useState('');
@@ -39,6 +37,12 @@ export const DetalheDeQuiosques: React.FC = () => {
           formRef.current?.setData(result);
         }
       });
+    } else {
+      formRef.current?.setData({
+        nome: '',
+        endereco: '',
+        cidade: '',
+      });
     }
   }, [id]);
 
@@ -52,7 +56,11 @@ export const DetalheDeQuiosques: React.FC = () => {
         if (result instanceof Error) {
           alert(result.message);
         } else {
-          navigate(`/quiosques/detalhe/${result}`);
+          if (isSaveAndClose()) {
+            navigate('/quiosques');
+          } else {
+            navigate(`/quiosques/detalhe/${result}`);
+          }
         }
       });
     } else {
@@ -62,6 +70,10 @@ export const DetalheDeQuiosques: React.FC = () => {
         setIsLoading(false);
         if (result instanceof Error) {
           alert(result.message);
+        } else {
+          if (isSaveAndClose()) {
+            navigate('/quiosques');
+          }
         }
       });
     }
@@ -92,15 +104,15 @@ export const DetalheDeQuiosques: React.FC = () => {
           mostrarBotaoApagar={id !== 'novo'}
           mostrarBotaoNovo={id !== 'novo'}
 
-          aoClicarEmSalvar={() => formRef.current?.submitForm()}
-          aoClicarEmSalvarEFechar={() => formRef.current?.submitForm()}
+          aoClicarEmSalvar={save}
+          aoClicarEmSalvarEFechar={saveAndClose}
           aoClicarEmApagar={() => handleDelete(Number(id))}
           aoClicarEmNovo={() => navigate('/quiosques/detalhe/novo')}
           aoClicarEmVoltar={() => navigate('/quiosques')}
         />
       }
     >
-      <Form ref={formRef} onSubmit={handleSave}>
+      <VForm ref={formRef} onSubmit={handleSave}>
         <Box margin={1} display='flex' flexDirection='column' component={Paper} variant="outlined">
 
           <Grid container direction='column' padding={2} spacing={2}>
@@ -152,7 +164,7 @@ export const DetalheDeQuiosques: React.FC = () => {
           </Grid>
 
         </Box>
-      </Form>
+      </VForm>
     </LayoutBaseDePagina>
   );
 };
