@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
 import { Box, CircularProgress, Grid, Paper, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
+import * as yup from 'yup';
 
 import { LayoutBaseDePagina } from "../../shared/layouts";
 import { FerramentasDeDetalhe } from "../../shared/components";
 import { QuiosquesService } from "../../shared/services/api/quiosques/QuiosquesService";
-import { VTextField, VForm, useVForm } from "../../shared/forms";
+import { VTextField, VForm, useVForm, IVFormErrors } from "../../shared/forms";
 interface IFormData {
   nome: string;
   endereco: string;
   cidade: string;
 }
+
+const formValidationSchema: yup.Schema<IFormData> = yup.object().shape({
+  nome: yup.string().required().min(3),
+  endereco: yup.string().required(),
+  cidade: yup.string().required(),
+});
 
 export const DetalheDeQuiosques: React.FC = () => {
   const { id = 'novo'} = useParams<'id'>();
@@ -47,36 +54,48 @@ export const DetalheDeQuiosques: React.FC = () => {
   }, [id]);
 
   const handleSave = (dados: IFormData) => {
-    setIsLoading(true);
-    if (id === 'novo') {
-      QuiosquesService
-      .create(dados)
-      .then((result) => {
-        setIsLoading(false);
-        if (result instanceof Error) {
-          alert(result.message);
+    formValidationSchema.
+      validate(dados, { abortEarly: false })
+      .then((dadosValidados) => {
+        setIsLoading(true);
+        if (id === 'novo') {
+          QuiosquesService
+          .create(dadosValidados)
+          .then((result) => {
+            setIsLoading(false);
+            if (result instanceof Error) {
+              alert(result.message);
+            } else {
+              if (isSaveAndClose()) {
+                navigate('/quiosques');
+              } else {
+                navigate(`/quiosques/detalhe/${result}`);
+              }
+            }
+          });
         } else {
-          if (isSaveAndClose()) {
-            navigate('/quiosques');
-          } else {
-            navigate(`/quiosques/detalhe/${result}`);
-          }
+          QuiosquesService
+          .updateById(Number(id), { id: Number(id), ...dadosValidados })
+          .then((result) => {
+            setIsLoading(false);
+            if (result instanceof Error) {
+              alert(result.message);
+            } else {
+              if (isSaveAndClose()) {
+                navigate('/quiosques');
+              }
+            }
+          });
         }
-      });
-    } else {
-      QuiosquesService
-      .updateById(Number(id), { id: Number(id), ...dados })
-      .then((result) => {
-        setIsLoading(false);
-        if (result instanceof Error) {
-          alert(result.message);
-        } else {
-          if (isSaveAndClose()) {
-            navigate('/quiosques');
-          }
-        }
-      });
-    }
+      })
+      .catch((errors: yup.ValidationError) => {
+        const validationErrors: IVFormErrors = {};
+        errors.inner.forEach(error => {
+          if (!error.path) return;
+          validationErrors[error.path] = error.message;
+        });
+        formRef.current?.setErrors(validationErrors);
+      });  
   };
 
   const handleDelete = (id: number) => {
