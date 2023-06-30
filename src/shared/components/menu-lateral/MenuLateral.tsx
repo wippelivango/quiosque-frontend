@@ -2,6 +2,7 @@ import { Avatar, Divider, Drawer, Icon, List, ListItemButton, ListItemIcon, List
 import { Box } from "@mui/system";
 import { useAppThemeContext, useDrawerContext } from "../../contexts";
 import { useMatch, useNavigate, useResolvedPath } from "react-router-dom";
+import quiosque from "./quiosque.jpg";
 
 interface IListItemLinkProps {
   to: string;
@@ -49,8 +50,8 @@ export const MenuLateral: React.FC<IMenuLateralProps> = ({ children }) => {
           
           <Box width="100%" height={theme.spacing(20)} display="flex" alignItems="center" justifyContent="center">
             <Avatar
-              sx={{ height: theme.spacing(12), width: theme.spacing(12)}}
-              src="/static/images/avatar/1.jpg"
+              sx={{ height: theme.spacing(14), width: theme.spacing(14)}}
+              src={quiosque}
             />
           </Box>
 

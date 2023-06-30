@@ -11,13 +11,13 @@ export const Dashboard = () => {
 
   useEffect(() => {
     setIsLoadingQuiosques(true);
-      QuiosquesService.getAll(1)
+      QuiosquesService.getTotal()
         .then((result) => {
           setIsLoadingQuiosques(false);
           if (result instanceof Error) {
             alert(result.message);
           } else {
-            setTotalCountQuiosques(result.totalCount);
+            setTotalCountQuiosques(result);
           }
         });
   }, []);

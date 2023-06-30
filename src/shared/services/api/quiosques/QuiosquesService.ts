@@ -24,12 +24,16 @@ const getAll = async ( page = 1, filter = ''): Promise<TQuiosquesComTotalCount |
   try {
     const urlRelativa = `/quiosque?_page=${page}&_limit=${Environment.LIMITE_DE_LINHAS}&nome_like=${filter}`;
 
-    const { data, headers } = await  Api.get(urlRelativa);
+    let { data, headers } = await  Api.get(urlRelativa);
 
     if (data) {
+      let final = Environment.LIMITE_DE_LINHAS * page;
+      let inicial = final - Environment.LIMITE_DE_LINHAS;
+      let length = data.length;
+      data = data.slice(inicial, final);
       return {
         data,
-        totalCount: Number(headers['x-total-count'] || Environment.LIMITE_DE_LINHAS),
+        totalCount: length,
       };
     }
 
@@ -37,6 +41,21 @@ const getAll = async ( page = 1, filter = ''): Promise<TQuiosquesComTotalCount |
   } catch (error) {
     console.error(error);
     return new Error((error as { message: string }).message || 'Erro ao listar os registros.');
+  }
+ };
+
+ const getTotal = async (): Promise<number | Error> => {
+  try {
+    const { data } = await  Api.get(`/quiosque/contar`);
+
+    if (data) {
+      return data;
+    }
+    
+    return new Error('Erro ao contar os registros.');
+  } catch (error) {
+    console.error(error);
+    return new Error((error as { message: string }).message || 'Erro ao contar os registros.');
   }
  };
 
@@ -90,6 +109,7 @@ const deleteById = async (id: number): Promise<void | Error> => {
 
 export const QuiosquesService = {
   getAll,
+  getTotal,
   getById,
   create,
   updateById,
